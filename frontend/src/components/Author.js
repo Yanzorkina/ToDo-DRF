@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AuthorItem = ({ author }) => {
+const AuthorItem = ({author}) => {
     return (
         <tr>
             <td>
@@ -19,7 +19,7 @@ const AuthorItem = ({ author }) => {
     )
 }
 
-const AuthorList = ({ authors }) => {
+const AuthorList = ({authors}) => {
     return (
         <table>
             <th>
