@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from graphene_django.views import GraphQLView
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 from authors.views import AuthorModelViewSet, AuthorCustomViewSet, AuthorListAPIView
@@ -51,6 +52,7 @@ urlpatterns = [
     path('api-token-auth/', views.obtain_auth_token),
     path('api/<str:version>/authors/', AuthorListAPIView.as_view()),
     #path('swagger<str:format>/', schema_view.without_ui()),
-    path('swagger/', schema_view.with_ui('swagger'))
+    path('swagger/', schema_view.with_ui('swagger')),
+    path('graphql/', GraphQLView.as_view(graphiql=True)),
     ]
 

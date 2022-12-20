@@ -42,12 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'graphene_django',
     'rest_framework',
+    'rest_framework.authtoken',
     'authors',
     'django_filters',
     'corsheaders',
     'memoapp',
-    'rest_framework.authtoken',
     'drf_yasg'
 ]
 
@@ -154,3 +155,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning'
 }
+
+GRAPHENE = {
+    "SCHEMA": "TODO.schema.schema"
+}
+
