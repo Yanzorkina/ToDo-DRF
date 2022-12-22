@@ -16,24 +16,24 @@ class TestProjectModelViewSet(APITestCase):
         response = self.client.get('/api/project/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_edit_project_admin(self):
+    #def test_edit_project_admin(self):
         #author = Author.objects.create(username='Пушкин', firstname='Александр', lastname='Пушкин',
         #                               email='pushkin1799@bk.ru')
         #project = Project.objects.create(name='Руслан и Людмила', repo_link='randl.com')
         #project.authors.add(author)
         #project.save()
 
-        project = mixer.blend(Project)
-        admin = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123456')
-        self.client.login(username='admin', password='admin123456')
-        response = self.client.put(f'/api/project/{project.id}/', {'name': 'Пиковая дама',
-                                                                   'repo_link': 'queen_of_spades.ru',
-                                                                   'authors': 1})
-        #print(response(json()))
-        project = Project.objects.get(pk=project.id)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(project.name, 'Пиковая дама')
-        self.client.logout()
+        #project = mixer.blend(Project, author__name=)
+        #admin = User.objects.create_superuser('admin', 'admin@admin.com', 'admin123456')
+        #self.client.login(username='admin', password='admin123456')
+        #response = self.client.put(f'/api/project/{project.id}/', {'name': 'Пиковая дама',
+                                                                   #'repo_link': 'queen_of_spades.ru',
+                                                                   #'authors': 1})
+
+        #project = Project.objects.get(pk=project.id)
+        #self.assertEqual(response.status_code, status.HTTP_200_OK)
+        #self.assertEqual(project.name, 'Пиковая дама')
+        #self.client.logout()
 
 
 
