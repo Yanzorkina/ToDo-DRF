@@ -11,6 +11,8 @@ import Footer from './components/Footer.js';
 import {BrowserRouter, Route, Routes, Link, Navigate} from "react-router-dom"
 import axios from 'axios';
 import Cookies from "universal-cookie"
+import ProjectForm from "./components/ProjectForm";
+import TodoForm from "./components/TodoForm";
 
 
 class App extends React.Component {
@@ -24,14 +26,56 @@ class App extends React.Component {
         }
     }
 
-    logout() {
-        this.set_token('')
-        this.set_token({'authors':[]})
-        this.set_token({'todoes':[]})
-        this.set_token({'projects':[]})
+    create_todo(text, project, created_by) {
+        const headers = this.get_headers()
+        const data = {text: text, project: project, created_by: created_by}
+        axios.post(`http://127.0.0.1:8000/api/todo_filter/`, data, {headers}).then(response => {
+            this.load_data()
+        }).catch(error => {
+            console.log(error)
+            this.setState({projects: []})
+        })
     }
 
-    is_auth () {
+    delete_todo(id) {
+        const headers = this.get_headers()
+        axios.delete(`http://127.0.0.1:8000/api/todo_filter/${id}`, {headers}).then(response => {
+            this.load_data()
+        }).catch(error => {
+            this.setState({todoes: []})
+        })
+    }
+
+    create_project(name, repo_link, authors) {
+        const headers = this.get_headers()
+        const data = {name: name, repo_link: repo_link, authors: authors}
+        axios.post(`http://127.0.0.1:8000/api/project_filter/`, data, {headers}).then(response => {
+            this.load_data()
+        }).catch(error => {
+            console.log(error)
+            this.setState({projects: []})
+        })
+    }
+
+
+    delete_project(id) {
+        const headers = this.get_headers()
+        axios.delete(`http://127.0.0.1:8000/api/project_filter/${id}`, {headers}).then(response => {
+            this.load_data()
+        }).catch(error => {
+            this.setState({projects: []})
+        })
+    }
+
+
+    logout() {
+        this.set_token('')
+        this.set_token({'authors': []})
+        this.set_token({'todoes': []})
+        this.set_token({'projects': []})
+    }
+
+    is_auth() {
         return !!this.state.token
     }
 
@@ -66,62 +110,73 @@ class App extends React.Component {
     }
 
 
-  load_data(){
+    load_data() {
         const headers = this.get_headers()
-        axios.get('http://127.0.0.1:8000/api/authors/',{headers}).then(response => {
+        axios.get('http://127.0.0.1:8000/api/authors/', {headers}).then(response => {
 
-              this.setState(
-              {
-                'authors': response.data
-              }
+            this.setState(
+                {
+                    'authors': response.data
+                }
             )
-          }).catch(error => console.log(error))
+        }).catch(error => console.log(error))
 
-        axios.get('http://127.0.0.1:8000/api/todo_filter/',{headers}).then(response => {
+        axios.get('http://127.0.0.1:8000/api/todo_filter/', {headers}).then(response => {
 
-                this.setState(
-              {
-                'todoes': response.data
-              }
+            this.setState(
+                {
+                    'todoes': response.data
+                }
             )
-          }).catch(error => console.log(error))
+        }).catch(error => console.log(error))
 
-        axios.get('http://127.0.0.1:8000/api/project_filter/',{headers}).then(response => {
+        axios.get('http://127.0.0.1:8000/api/project_filter/', {headers}).then(response => {
 
-              this.setState(
-              {
-                'projects': response.data
-              }
+            this.setState(
+                {
+                    'projects': response.data
+                }
             )
-          }).catch(error => console.log(error))
-  }
+        }).catch(error => console.log(error))
+    }
 
-  componentDidMount() {
-    this.get_token_storage()
-  }
+    componentDidMount() {
+        this.get_token_storage()
+    }
 
-  render() {
-    return (
-      <div>
-          <TopNavPanel/>
-          <BrowserRouter>
-              <nav>
-                  <li><Link to='/authors'>Authors</Link></li>
-                  <li><Link to='/todoes'>Todoes</Link></li>
-                  <li><Link to='/projects'>Projects</Link></li>
-                  <li> {this.is_auth() ?<button onClick={()=> this.logout()}>Logout</button> : <Link to='/login'>Login</Link>}</li>
-              </nav>
-              <Routes>
-                  <Route exact path='/authors' element={<AuthorList authors={this.state.authors}/>}/>
-                  <Route exact path='/todoes' element={<TodoList todoes={this.state.todoes}/>}/>
-                  <Route exact path='/projects' element={<ProjectList projects={this.state.projects}/>}/>
-                  <Route exact path='/login' element={<LoginForm get_token={(username, password) => this.get_token(username, password)}/>}/>
-                  <Route path='*' element={<NotFound404/>}/>
-              </Routes>
-          </BrowserRouter>
-          <Footer/>
-      </div>
-    )
-  }
+    render() {
+        return (
+            <div>
+                <TopNavPanel/>
+                <BrowserRouter>
+                    <nav>
+                        <li><Link to='/authors'>Authors</Link></li>
+                        <li><Link to='/todoes'>Todoes</Link></li>
+                        <li><Link to='/projects'>Projects</Link></li>
+                        <li> {this.is_auth() ? <button onClick={() => this.logout()}>Logout</button> :
+                            <Link to='/login'>Login</Link>}</li>
+                    </nav>
+                    <Routes>
+                        <Route exact path='/authors' element={<AuthorList authors={this.state.authors}/>}/>
+                        <Route exact path='/todoes' element={<TodoList todoes={
+                            this.state.todoes} delete_todo={(id) => this.delete_todo(id)}/>}/>
+                        <Route exact path='/todoes/create' element={<TodoForm project={
+                            this.state.project} created_by={this.state.created_by} create_todo={
+                            (text, project, created_by) => this.create_todo(text, project, created_by)}/>}/>
+                        <Route exact path='/projects' element={<ProjectList projects={
+                            this.state.projects} delete_project={(id) => this.delete_project(id)}/>}/>
+                        <Route exact path='/projects/create' element={<ProjectForm authors={
+                            this.state.authors} create_project={
+                            (name, repo_link, authors) => this.create_project(name, repo_link, authors)}/>}/>
+                        <Route exact path='/login' element={<LoginForm
+                            get_token={(username, password) => this.get_token(username, password)}/>}/>
+                        <Route path='*' element={<NotFound404/>}/>
+                    </Routes>
+                </BrowserRouter>
+                <Footer/>
+            </div>
+        )
+    }
 }
+
 export default App;
